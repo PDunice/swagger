@@ -2,13 +2,18 @@
   "books": [
     {
       "id": "12345678",
-      "title": "a volta dos que não foram",
-      "author": "luis carrol"
+      "title": "edited happy book",
+      "author": "edited happy author"
     },
     {
       "id": "asdfghjk",
       "title": "a volta dos que não foram, o retorno",
       "author": "luis carrol"
+    },
+    {
+      "id": "sBBMc_W8",
+      "title": "another happy book",
+      "author": "another happy author"
     }
   ]
 }

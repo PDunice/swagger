@@ -1,0 +1,24 @@
+GET http://localhost:4000/books
+
+
+###
+GET http://localhost:4000/books/12345678
+
+###
+POST http://localhost:4000/books
+content-type: application/json
+
+{
+ "title": "a happy book",
+ "author": "a happy author"
+}
+
+
+###
+PUT http://localhost:4000/books/12678
+content-type: application/json
+
+{
+ "title": "another happy book",
+ "author": "another happy author"
+}

@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const { nonoid } = require('nanoid')
+const { nanoid } = require('nanoid')
 
-const idLength =8;
+const idLength = 8;
 
 /**
  * @swagger
@@ -27,7 +27,7 @@ const idLength =8;
  *              id: zxcvbnmk
  *              title: a happy book
  *              author: a happy author
- */         
+ */
 
 /**
  * @swagger
@@ -54,9 +54,9 @@ const idLength =8;
  *                              $ref: '#/components/schemas/Book'
  * 
  */
-router.get('/', ( req, res)=>{
+router.get('/', (req, res) => {
     const books = req.app.db.get('books')
-    res.send( books)
+    res.send(books)
 });
 
 /**
@@ -83,11 +83,11 @@ router.get('/', ( req, res)=>{
  *          404:
  *              description: The book was not found
  */
-router.get('/:id', ( req, res)=>{
-    const book = req.app.db.get('books').find({id:req.params.id}).value()
-    if(!book)
+router.get('/:id', (req, res) => {
+    const book = req.app.db.get('books').find({ id: req.params.id }).value()
+    if (!book)
         return res.status(404).send('id inválida')
-    res.send( book)
+    res.send(book)
 });
 
 /**
@@ -112,35 +112,102 @@ router.get('/:id', ( req, res)=>{
  *          500:
  *              description: Some server error      
  */
-router.post('/', ( req, res)=>{
-    try{
-        const book ={
-            id:nonoid(idLength),
-            ...req.body
+router.post('/', (req, res) => {
+    try {
+
+        const book = {
+            id: nanoid(idLength),
+            ...req.body,
         };
+
         req.app.db.get('books').push(book).write();
-        res.status(200).send(book)
-    }
-    catch(error){
-        return res.status(500).send(error)
+
+        res.send(book);
+    } catch (error) {
+        return res.status(500).send(error);
     }
 });
 
-router.put('/:id', ( req, res)=>{
-    try{
-        req.app.db.get('books').find({id:req.params.id}).assign(req.body).write()
-       res.status(200).send('Modificou')
+/**
+ * @swagger
+ * /books/{id}:
+ *  put:
+ *      summary: edit a book
+ *      tags: [Books]
+ *      parameters:
+ *          - in: path
+ *            name: id
+ *            schema:             
+ *              type: string
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Book'
+ *      responses:
+ *          200:
+ *              description: The book was successfully edited
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/Book'
+ *          404:
+ *              description: book not found
+ *          500:
+ *              description: Some server error      
+ */
+
+router.put('/:id', (req, res) => {
+    const book = req.app.db.get('books').find({ id: req.params.id }).value()
+    if (book) {
+        try {
+            req.app.db.get('books').find({ id: req.params.id }).assign(req.body).write()
+            res.status(200).send('Editou id')
         }
-    catch(error){
-        return res.status(500).send(error)
+        catch (error) {
+            return res.status(500).send(error)
+        }
     }
+    else { return res.status(404).send('id not found') }
 });
 
-router.delete('/:id', (req, res)=>{
+/**
+ * @swagger
+ * /books/{id}:
+ *  delete:
+ *      summary: delete a book
+ *      tags: [Books]
+ *      parameters:
+ *          - in: path
+ *            name: id
+ *            schema:             
+ *              type: string
+ *            description: The book id
+ *      responses:
+ *          200:
+ *              description: The book was successfully deleted
+ *          500:
+ *              description: Some server error
+ *          404:
+ *              description: id não encontrada
+ */
 
-    req.app.db.get('books').remove({id:req.params.id}).write()
 
-    res.status(200).send('Removeu')
+router.delete('/:id', (req, res) => {
+    const book = req.app.db.get('books').find({ id: req.params.id }).value()
+    if (book) {
+        try {
+            req.app.db.get('books').remove({ id: req.params.id }).write()
+
+            res.status(200).send('Removed')
+        }
+        catch (error) {
+            res.status(500).send(error)
+        }
+    }
+    else
+        res.status(404).send('id not found')
 });
 
 

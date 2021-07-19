@@ -15,6 +15,7 @@ const adapter = new FileSync("db.json")
 const db = low(adapter)
 
 db.defaults({books:[]}).write()
+const app = express()
 
 const options = {
     definition: {
@@ -31,11 +32,10 @@ const options = {
     apis: ["./routes/*.js"]
 }
 const specs = swaggerJsDoc(options)
-const app = express()
+
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs))
 
 app.db = db;
-
 app.use(cors())
 app.use(express.json())
 app.use(morgan("dev"))
